@@ -116,4 +116,38 @@ public_users.get('/async/isbn/:isbn', async function (req, res) {
   }
 });
 
+
+// Task 12: Get book details by author using async-await with Axios
+public_users.get('/async/author/:author', async function (req, res) {
+  const author = req.params.author;
+  try {
+    // encodeURIComponent turns spaces etc. back into URL-safe form (Jane Austen -> Jane%20Austen)
+    const response = await axios.get(`http://localhost:5000/author/${encodeURIComponent(author)}`);
+    return res.status(200).send(JSON.stringify(response.data, null, 4));
+  } catch (error) {
+    // Task 3 route said "not found" -> pass that on
+    if (error.response && error.response.status === 404) {
+      return res.status(404).json({ message: "No books found by this author" });
+    }
+    // Anything else (server down, etc.)
+    return res.status(500).json({ message: "Error fetching books by author", error: error.message });
+  }
+});
+
+// Task 13: Get book details by title using async-await with Axios
+public_users.get('/async/title/:title', async function (req, res) {
+  const title = req.params.title;
+  try {
+    const response = await axios.get(`http://localhost:5000/title/${encodeURIComponent(title)}`);
+    return res.status(200).send(JSON.stringify(response.data, null, 4));
+  } catch (error) {
+    // Task 4 route said "not found" -> pass that on
+    if (error.response && error.response.status === 404) {
+      return res.status(404).json({ message: "No books found by this title name" });
+    }
+    // Anything else (server down, etc.)
+    return res.status(500).json({ message: "Error fetching books by title", error: error.message });
+  }
+});
+
 module.exports.general = public_users;
